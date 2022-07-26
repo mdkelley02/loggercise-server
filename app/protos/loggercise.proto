@@ -8,45 +8,50 @@ import "google/api/annotations.proto";
 service loggercise {
   rpc UpsertWorkout(UpsertWorkoutRequest) returns (WorkoutResponse) {
     option (google.api.http) = {
-      post: "/api/workout/{workoutId}"
+      post: "/api/workouts/{workoutId}"
       body: "*"
     };
   }
   rpc GetWorkouts(GetWorkoutsRequest) returns (WorkoutResponse) {
     option (google.api.http) = {
-      get: "/api/workout"
+      get: "/api/workouts"
+    };
+  }
+  rpc GetWorkout(WorkoutRequest) returns (Workout) {
+    option (google.api.http) = {
+      get: "/api/workouts/{workoutId}"
     };
   }
   rpc DeleteWorkout(WorkoutRequest) returns (WorkoutResponse) {
     option (google.api.http) = {
-      delete: "/api/workout/{workoutId}"
+      delete: "/api/workouts/{workoutId}"
     };
   }
   rpc UpsertExercise(UpsertExerciseRequest) returns (ExerciseResponse) {
     option (google.api.http) = {
-      post: "/api/workout/{workoutId}/exercises/{exerciseId}"
+      post: "/api/workouts/{workoutId}/exercises/{exerciseId}"
       body: "*"
     };
   }
   rpc GetExercises(WorkoutRequest) returns (ExerciseResponse) {
     option (google.api.http) = {
-      get: "/api/workout/{workoutId}/exercises"
+      get: "/api/workouts/{workoutId}/exercises"
     };
   }
   rpc DeleteExercise(ExerciseRequest) returns (ExerciseResponse) {
     option (google.api.http) = {
-      delete: "/api/workout/{workoutId}/exercises/{exerciseId}"
+      delete: "/api/workouts/{workoutId}/exercises/{exerciseId}"
     };
   }
   rpc UpsertSet(UpsertSetRequest) returns (Empty) {
     option (google.api.http) = {
-      post: "/api/workout/{workoutId}/exercise/{exerciseId}/sets/{setId}"
+      post: "/api/workouts/{workoutId}/exercises/{exerciseId}/sets/{setId}"
       body: "*"
     };
   }
   rpc DeleteSet(DeleteSetRequest) returns (Empty) {
     option (google.api.http) = {
-      delete: "/api/workout/{workoutId}/exercise/{exerciseId}/sets/{setId}"
+      delete: "/api/workouts/{workoutId}/exercises/{exerciseId}/sets/{setId}"
     };
   }
   rpc UpsertLift(UpsertLiftRequest) returns (LiftResponse) {
