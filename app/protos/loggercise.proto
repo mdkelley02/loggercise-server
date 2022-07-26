@@ -1,0 +1,177 @@
+syntax = "proto3";
+package loggercise;
+
+option go_package = "loggercise/service";
+
+import "google/api/annotations.proto";
+
+service loggercise {
+  rpc UpsertWorkout(UpsertWorkoutRequest) returns (WorkoutResponse) {
+    option (google.api.http) = {
+      post: "/api/workout/{workoutId}"
+      body: "*"
+    };
+  }
+  rpc GetWorkouts(GetWorkoutsRequest) returns (WorkoutResponse) {
+    option (google.api.http) = {
+      get: "/api/workout"
+    };
+  }
+  rpc DeleteWorkout(WorkoutRequest) returns (WorkoutResponse) {
+    option (google.api.http) = {
+      delete: "/api/workout/{workoutId}"
+    };
+  }
+  rpc UpsertExercise(UpsertExerciseRequest) returns (ExerciseResponse) {
+    option (google.api.http) = {
+      post: "/api/workout/{workoutId}/exercises/{exerciseId}"
+      body: "*"
+    };
+  }
+  rpc GetExercises(WorkoutRequest) returns (ExerciseResponse) {
+    option (google.api.http) = {
+      get: "/api/workout/{workoutId}/exercises"
+    };
+  }
+  rpc DeleteExercise(ExerciseRequest) returns (ExerciseResponse) {
+    option (google.api.http) = {
+      delete: "/api/workout/{workoutId}/exercises/{exerciseId}"
+    };
+  }
+  rpc UpsertSet(UpsertSetRequest) returns (Empty) {
+    option (google.api.http) = {
+      post: "/api/workout/{workoutId}/exercise/{exerciseId}/sets/{setId}"
+      body: "*"
+    };
+  }
+  rpc DeleteSet(DeleteSetRequest) returns (Empty) {
+    option (google.api.http) = {
+      delete: "/api/workout/{workoutId}/exercise/{exerciseId}/sets/{setId}"
+    };
+  }
+  rpc UpsertLift(UpsertLiftRequest) returns (LiftResponse) {
+    option (google.api.http) = {
+      post: "/api/lifts/{liftId}"
+      body: "*"
+    };
+  }
+  rpc GetLifts(Empty) returns (LiftResponse) {
+    option (google.api.http) = {
+      get: "/api/lifts"
+    };
+  }
+  rpc GetMuscles(Empty) returns (MusclesResponse) {
+    option (google.api.http) = {
+      get: "/api/muscles"
+    };
+  }
+}
+
+message Empty {}
+
+// requests ---------------------------------------------------------------
+
+
+message UpsertWorkoutRequest {
+  string userId = 1;
+  string workoutId = 2;
+  string title = 3;
+  string notes = 4;
+  string date = 5;
+  string createdAt = 6;
+}
+
+message GetWorkoutsRequest {
+  string userId = 1;
+}
+
+message WorkoutRequest {
+  string workoutId = 2;
+}
+
+message UpsertExerciseRequest {
+  string workoutId = 1;
+  string exerciseId = 2;
+  Lift lift = 3;
+  repeated ExerciseSet sets = 4;
+}
+
+message ExerciseRequest {
+  string workoutId = 1;
+  string exerciseId = 2;
+}
+
+message UpsertLiftRequest {
+  string liftId = 1;
+  string name = 2;
+  repeated Muscle muscleGroups = 3;
+}
+
+message DeleteSetRequest {
+  string workoutId = 1;
+  string exerciseId = 2;
+  string setId = 3;
+}
+
+message UpsertSetRequest {
+  string workoutId = 1;
+  string exerciseId = 2;
+  string setId = 3;
+  ExerciseSet set = 4;
+}
+
+// responses --------------------------------------------------------------
+message WorkoutResponse {
+  repeated Workout workouts = 1;
+}
+
+message ExerciseResponse {
+  repeated Exercise exercises = 1;
+}
+
+message LiftResponse {
+  repeated Lift lifts = 1;
+}
+
+message MusclesResponse {
+  repeated Muscle muscles = 1;
+}
+
+// sub-types ---------------------------------------------------------------
+message Muscle {
+  string name = 1;
+  string type = 2;
+}
+
+message Lift {
+  string liftId = 1;
+  string name = 2;
+  repeated Muscle muscleGroups = 3;
+}
+
+message ExerciseSet {
+  int32 weight = 1;
+  int32 reps = 2;
+  int32 rpe = 3;
+  int32 rest = 4;
+  string setId = 5;
+}
+
+message Exercise {
+  string workoutId = 1;
+  string exerciseId = 2;
+  Lift lift = 3;
+  repeated ExerciseSet sets = 4;
+}
+
+message Workout {
+  string workoutId = 1;
+  string userId = 2;
+  string title = 3;
+  string notes = 4;
+  string date = 5;
+  string createdAt = 6;
+  repeated Exercise exercises = 7;
+}
+
+

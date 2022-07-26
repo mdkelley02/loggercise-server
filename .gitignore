@@ -1,0 +1,6 @@
+.env
+vendor/
+.vscode
+.terraform
+.terraform.lock.hcl
+terraform.tfstate
