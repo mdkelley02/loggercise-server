@@ -135,6 +135,58 @@ func local_request_Loggercise_GetWorkouts_0(ctx context.Context, marshaler runti
 
 }
 
+func request_Loggercise_GetWorkout_0(ctx context.Context, marshaler runtime.Marshaler, client LoggerciseClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq WorkoutRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["workoutId"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "workoutId")
+	}
+
+	protoReq.WorkoutId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "workoutId", err)
+	}
+
+	msg, err := client.GetWorkout(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_Loggercise_GetWorkout_0(ctx context.Context, marshaler runtime.Marshaler, server LoggerciseServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq WorkoutRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["workoutId"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "workoutId")
+	}
+
+	protoReq.WorkoutId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "workoutId", err)
+	}
+
+	msg, err := server.GetWorkout(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
 func request_Loggercise_DeleteWorkout_0(ctx context.Context, marshaler runtime.Marshaler, client LoggerciseClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq WorkoutRequest
 	var metadata runtime.ServerMetadata
@@ -716,7 +768,7 @@ func RegisterLoggerciseHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/loggercise.Loggercise/UpsertWorkout", runtime.WithHTTPPathPattern("/api/workout/{workoutId}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/loggercise.Loggercise/UpsertWorkout", runtime.WithHTTPPathPattern("/api/workouts/{workoutId}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -740,7 +792,7 @@ func RegisterLoggerciseHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/loggercise.Loggercise/GetWorkouts", runtime.WithHTTPPathPattern("/api/workout"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/loggercise.Loggercise/GetWorkouts", runtime.WithHTTPPathPattern("/api/workouts"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -757,6 +809,30 @@ func RegisterLoggerciseHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
+	mux.Handle("GET", pattern_Loggercise_GetWorkout_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/loggercise.Loggercise/GetWorkout", runtime.WithHTTPPathPattern("/api/workouts/{workoutId}"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_Loggercise_GetWorkout_0(ctx, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_Loggercise_GetWorkout_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
 	mux.Handle("DELETE", pattern_Loggercise_DeleteWorkout_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -764,7 +840,7 @@ func RegisterLoggerciseHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/loggercise.Loggercise/DeleteWorkout", runtime.WithHTTPPathPattern("/api/workout/{workoutId}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/loggercise.Loggercise/DeleteWorkout", runtime.WithHTTPPathPattern("/api/workouts/{workoutId}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -788,7 +864,7 @@ func RegisterLoggerciseHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/loggercise.Loggercise/UpsertExercise", runtime.WithHTTPPathPattern("/api/workout/{workoutId}/exercises/{exerciseId}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/loggercise.Loggercise/UpsertExercise", runtime.WithHTTPPathPattern("/api/workouts/{workoutId}/exercises/{exerciseId}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -812,7 +888,7 @@ func RegisterLoggerciseHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/loggercise.Loggercise/GetExercises", runtime.WithHTTPPathPattern("/api/workout/{workoutId}/exercises"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/loggercise.Loggercise/GetExercises", runtime.WithHTTPPathPattern("/api/workouts/{workoutId}/exercises"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -836,7 +912,7 @@ func RegisterLoggerciseHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/loggercise.Loggercise/DeleteExercise", runtime.WithHTTPPathPattern("/api/workout/{workoutId}/exercises/{exerciseId}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/loggercise.Loggercise/DeleteExercise", runtime.WithHTTPPathPattern("/api/workouts/{workoutId}/exercises/{exerciseId}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -860,7 +936,7 @@ func RegisterLoggerciseHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/loggercise.Loggercise/UpsertSet", runtime.WithHTTPPathPattern("/api/workout/{workoutId}/exercise/{exerciseId}/sets/{setId}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/loggercise.Loggercise/UpsertSet", runtime.WithHTTPPathPattern("/api/workouts/{workoutId}/exercises/{exerciseId}/sets/{setId}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -884,7 +960,7 @@ func RegisterLoggerciseHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/loggercise.Loggercise/DeleteSet", runtime.WithHTTPPathPattern("/api/workout/{workoutId}/exercise/{exerciseId}/sets/{setId}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/loggercise.Loggercise/DeleteSet", runtime.WithHTTPPathPattern("/api/workouts/{workoutId}/exercises/{exerciseId}/sets/{setId}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1019,7 +1095,7 @@ func RegisterLoggerciseHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/loggercise.Loggercise/UpsertWorkout", runtime.WithHTTPPathPattern("/api/workout/{workoutId}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/loggercise.Loggercise/UpsertWorkout", runtime.WithHTTPPathPattern("/api/workouts/{workoutId}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1040,7 +1116,7 @@ func RegisterLoggerciseHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/loggercise.Loggercise/GetWorkouts", runtime.WithHTTPPathPattern("/api/workout"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/loggercise.Loggercise/GetWorkouts", runtime.WithHTTPPathPattern("/api/workouts"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1056,12 +1132,33 @@ func RegisterLoggerciseHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
+	mux.Handle("GET", pattern_Loggercise_GetWorkout_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/loggercise.Loggercise/GetWorkout", runtime.WithHTTPPathPattern("/api/workouts/{workoutId}"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_Loggercise_GetWorkout_0(ctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_Loggercise_GetWorkout_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
 	mux.Handle("DELETE", pattern_Loggercise_DeleteWorkout_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/loggercise.Loggercise/DeleteWorkout", runtime.WithHTTPPathPattern("/api/workout/{workoutId}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/loggercise.Loggercise/DeleteWorkout", runtime.WithHTTPPathPattern("/api/workouts/{workoutId}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1082,7 +1179,7 @@ func RegisterLoggerciseHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/loggercise.Loggercise/UpsertExercise", runtime.WithHTTPPathPattern("/api/workout/{workoutId}/exercises/{exerciseId}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/loggercise.Loggercise/UpsertExercise", runtime.WithHTTPPathPattern("/api/workouts/{workoutId}/exercises/{exerciseId}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1103,7 +1200,7 @@ func RegisterLoggerciseHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/loggercise.Loggercise/GetExercises", runtime.WithHTTPPathPattern("/api/workout/{workoutId}/exercises"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/loggercise.Loggercise/GetExercises", runtime.WithHTTPPathPattern("/api/workouts/{workoutId}/exercises"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1124,7 +1221,7 @@ func RegisterLoggerciseHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/loggercise.Loggercise/DeleteExercise", runtime.WithHTTPPathPattern("/api/workout/{workoutId}/exercises/{exerciseId}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/loggercise.Loggercise/DeleteExercise", runtime.WithHTTPPathPattern("/api/workouts/{workoutId}/exercises/{exerciseId}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1145,7 +1242,7 @@ func RegisterLoggerciseHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/loggercise.Loggercise/UpsertSet", runtime.WithHTTPPathPattern("/api/workout/{workoutId}/exercise/{exerciseId}/sets/{setId}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/loggercise.Loggercise/UpsertSet", runtime.WithHTTPPathPattern("/api/workouts/{workoutId}/exercises/{exerciseId}/sets/{setId}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1166,7 +1263,7 @@ func RegisterLoggerciseHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/loggercise.Loggercise/DeleteSet", runtime.WithHTTPPathPattern("/api/workout/{workoutId}/exercise/{exerciseId}/sets/{setId}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/loggercise.Loggercise/DeleteSet", runtime.WithHTTPPathPattern("/api/workouts/{workoutId}/exercises/{exerciseId}/sets/{setId}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1249,21 +1346,23 @@ func RegisterLoggerciseHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 }
 
 var (
-	pattern_Loggercise_UpsertWorkout_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "workout", "workoutId"}, ""))
+	pattern_Loggercise_UpsertWorkout_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "workouts", "workoutId"}, ""))
 
-	pattern_Loggercise_GetWorkouts_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "workout"}, ""))
+	pattern_Loggercise_GetWorkouts_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "workouts"}, ""))
 
-	pattern_Loggercise_DeleteWorkout_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "workout", "workoutId"}, ""))
+	pattern_Loggercise_GetWorkout_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "workouts", "workoutId"}, ""))
 
-	pattern_Loggercise_UpsertExercise_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "workout", "workoutId", "exercises", "exerciseId"}, ""))
+	pattern_Loggercise_DeleteWorkout_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "workouts", "workoutId"}, ""))
 
-	pattern_Loggercise_GetExercises_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "workout", "workoutId", "exercises"}, ""))
+	pattern_Loggercise_UpsertExercise_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "workouts", "workoutId", "exercises", "exerciseId"}, ""))
 
-	pattern_Loggercise_DeleteExercise_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "workout", "workoutId", "exercises", "exerciseId"}, ""))
+	pattern_Loggercise_GetExercises_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "workouts", "workoutId", "exercises"}, ""))
 
-	pattern_Loggercise_UpsertSet_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5, 1, 0, 4, 1, 5, 6}, []string{"api", "workout", "workoutId", "exercise", "exerciseId", "sets", "setId"}, ""))
+	pattern_Loggercise_DeleteExercise_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "workouts", "workoutId", "exercises", "exerciseId"}, ""))
 
-	pattern_Loggercise_DeleteSet_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5, 1, 0, 4, 1, 5, 6}, []string{"api", "workout", "workoutId", "exercise", "exerciseId", "sets", "setId"}, ""))
+	pattern_Loggercise_UpsertSet_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5, 1, 0, 4, 1, 5, 6}, []string{"api", "workouts", "workoutId", "exercises", "exerciseId", "sets", "setId"}, ""))
+
+	pattern_Loggercise_DeleteSet_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5, 1, 0, 4, 1, 5, 6}, []string{"api", "workouts", "workoutId", "exercises", "exerciseId", "sets", "setId"}, ""))
 
 	pattern_Loggercise_UpsertLift_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "lifts", "liftId"}, ""))
 
@@ -1276,6 +1375,8 @@ var (
 	forward_Loggercise_UpsertWorkout_0 = runtime.ForwardResponseMessage
 
 	forward_Loggercise_GetWorkouts_0 = runtime.ForwardResponseMessage
+
+	forward_Loggercise_GetWorkout_0 = runtime.ForwardResponseMessage
 
 	forward_Loggercise_DeleteWorkout_0 = runtime.ForwardResponseMessage
 

@@ -13,6 +13,7 @@ import (
 
 type LoggerciseHandlerIF interface {
 	GetWorkouts(ctx context.Context, req *loggerciseProto.GetWorkoutsRequest) (*loggerciseProto.WorkoutResponse, error)
+	GetWorkout(ctx context.Context, req *loggerciseProto.WorkoutRequest) (*loggerciseProto.Workout, error)
 	UpsertWorkout(ctx context.Context, req *loggerciseProto.UpsertWorkoutRequest) (*loggerciseProto.WorkoutResponse, error)
 	DeleteWorkout(ctx context.Context, req *loggerciseProto.WorkoutRequest) (*loggerciseProto.WorkoutResponse, error)
 	UpsertExercise(ctx context.Context, req *loggerciseProto.UpsertExerciseRequest) (*loggerciseProto.ExerciseResponse, error)
@@ -40,6 +41,15 @@ func (svc *LoggerciseHandler) UpsertWorkout(ctx context.Context, req *loggercise
 	res, err := svc.store.UpsertWorkout(ctx, req)
 	if err != nil {
 		svc.log.Errorf("Error inserting workout: %v", err)
+		return nil, err
+	}
+	return res, nil
+}
+
+func (svc *LoggerciseHandler) GetWorkout(ctx context.Context, req *loggerciseProto.WorkoutRequest) (*loggerciseProto.Workout, error) {
+	res, err := svc.store.GetWorkout(ctx, req)
+	if err != nil {
+		svc.log.Errorf("Error getting workout: %v", err)
 		return nil, err
 	}
 	return res, nil
@@ -78,11 +88,21 @@ func (svc *LoggerciseHandler) UpsertExercise(ctx context.Context, req *loggercis
 }
 
 func (svc *LoggerciseHandler) UpsertSet(ctx context.Context, req *loggerciseProto.UpsertSetRequest) (*loggerciseProto.Empty, error) {
-	return nil, nil
+	res, err := svc.store.UpsertSet(ctx, req)
+	if err != nil {
+		svc.log.Errorf("Error inserting set: %v", err)
+		return nil, err
+	}
+	return res, nil
 }
 
 func (svc *LoggerciseHandler) DeleteSet(ctx context.Context, req *loggerciseProto.DeleteSetRequest) (*loggerciseProto.Empty, error) {
-	return nil, nil
+	res, err := svc.store.DeleteSet(ctx, req)
+	if err != nil {
+		svc.log.Errorf("Error deleting set: %v", err)
+		return nil, err
+	}
+	return res, nil
 }
 
 func (svc *LoggerciseHandler) DeleteExercise(ctx context.Context, req *loggerciseProto.ExerciseRequest) (*loggerciseProto.ExerciseResponse, error) {

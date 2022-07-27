@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type LoggerciseClient interface {
 	UpsertWorkout(ctx context.Context, in *UpsertWorkoutRequest, opts ...grpc.CallOption) (*WorkoutResponse, error)
 	GetWorkouts(ctx context.Context, in *GetWorkoutsRequest, opts ...grpc.CallOption) (*WorkoutResponse, error)
+	GetWorkout(ctx context.Context, in *WorkoutRequest, opts ...grpc.CallOption) (*Workout, error)
 	DeleteWorkout(ctx context.Context, in *WorkoutRequest, opts ...grpc.CallOption) (*WorkoutResponse, error)
 	UpsertExercise(ctx context.Context, in *UpsertExerciseRequest, opts ...grpc.CallOption) (*ExerciseResponse, error)
 	GetExercises(ctx context.Context, in *WorkoutRequest, opts ...grpc.CallOption) (*ExerciseResponse, error)
@@ -55,6 +56,15 @@ func (c *loggerciseClient) UpsertWorkout(ctx context.Context, in *UpsertWorkoutR
 func (c *loggerciseClient) GetWorkouts(ctx context.Context, in *GetWorkoutsRequest, opts ...grpc.CallOption) (*WorkoutResponse, error) {
 	out := new(WorkoutResponse)
 	err := c.cc.Invoke(ctx, "/loggercise.loggercise/GetWorkouts", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *loggerciseClient) GetWorkout(ctx context.Context, in *WorkoutRequest, opts ...grpc.CallOption) (*Workout, error) {
+	out := new(Workout)
+	err := c.cc.Invoke(ctx, "/loggercise.loggercise/GetWorkout", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -148,6 +158,7 @@ func (c *loggerciseClient) GetMuscles(ctx context.Context, in *Empty, opts ...gr
 type LoggerciseServer interface {
 	UpsertWorkout(context.Context, *UpsertWorkoutRequest) (*WorkoutResponse, error)
 	GetWorkouts(context.Context, *GetWorkoutsRequest) (*WorkoutResponse, error)
+	GetWorkout(context.Context, *WorkoutRequest) (*Workout, error)
 	DeleteWorkout(context.Context, *WorkoutRequest) (*WorkoutResponse, error)
 	UpsertExercise(context.Context, *UpsertExerciseRequest) (*ExerciseResponse, error)
 	GetExercises(context.Context, *WorkoutRequest) (*ExerciseResponse, error)
@@ -169,6 +180,9 @@ func (UnimplementedLoggerciseServer) UpsertWorkout(context.Context, *UpsertWorko
 }
 func (UnimplementedLoggerciseServer) GetWorkouts(context.Context, *GetWorkoutsRequest) (*WorkoutResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWorkouts not implemented")
+}
+func (UnimplementedLoggerciseServer) GetWorkout(context.Context, *WorkoutRequest) (*Workout, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetWorkout not implemented")
 }
 func (UnimplementedLoggerciseServer) DeleteWorkout(context.Context, *WorkoutRequest) (*WorkoutResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteWorkout not implemented")
@@ -242,6 +256,24 @@ func _Loggercise_GetWorkouts_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(LoggerciseServer).GetWorkouts(ctx, req.(*GetWorkoutsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Loggercise_GetWorkout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WorkoutRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LoggerciseServer).GetWorkout(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/loggercise.loggercise/GetWorkout",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LoggerciseServer).GetWorkout(ctx, req.(*WorkoutRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -422,6 +454,10 @@ var Loggercise_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetWorkouts",
 			Handler:    _Loggercise_GetWorkouts_Handler,
+		},
+		{
+			MethodName: "GetWorkout",
+			Handler:    _Loggercise_GetWorkout_Handler,
 		},
 		{
 			MethodName: "DeleteWorkout",

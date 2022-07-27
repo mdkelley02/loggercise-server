@@ -28,7 +28,7 @@ func main() {
 
 	ctx := context.Background()
 	logger := logrus.New()
-
+	logger.Info("Starting loggercise server")
 	// env config
 	var config settings.Settings
 	if err := envconfig.Process(ctx, &config); err != nil {
@@ -63,11 +63,14 @@ func main() {
 		mux := runtime.NewServeMux(
 			runtime.WithIncomingHeaderMatcher(runtime.DefaultHeaderMatcher),
 		)
+		logger.Infof("http server: %s", httpAddr)
 		loggerciseProtoPackage.RegisterLoggerciseHandlerServer(context.Background(), mux, loggerciseService)
+
 		logger.Fatal(http.ListenAndServe(httpAddr, GrpcGatewayInterceptor(mux, logger)))
 	}()
 
 	reflection.Register(server)
+	logger.Infof("grpc server: %s", addr)
 	server.Serve(lis)
 }
 

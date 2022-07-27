@@ -23,6 +23,7 @@ const (
 )
 
 type StoreIF interface {
+	GetWorkout(ctx context.Context, req *loggerciseProto.WorkoutRequest) (*loggerciseProto.Workout, error)
 	GetWorkouts(ctx context.Context, req *loggerciseProto.GetWorkoutsRequest) (*loggerciseProto.WorkoutResponse, error)
 	UpsertWorkout(ctx context.Context, req *loggerciseProto.UpsertWorkoutRequest) (*loggerciseProto.WorkoutResponse, error)
 	DeleteWorkout(ctx context.Context, req *loggerciseProto.WorkoutRequest) (*loggerciseProto.WorkoutResponse, error)
@@ -99,6 +100,17 @@ func (svc *Store) UpsertWorkout(ctx context.Context, req *loggerciseProto.Upsert
 		return nil, err
 	}
 	return &loggerciseProto.WorkoutResponse{}, nil
+}
+
+func (svc *Store) GetWorkout(ctx context.Context, req *loggerciseProto.WorkoutRequest) (*loggerciseProto.Workout, error) {
+	filter := bson.M{"_id": req.WorkoutId}
+	result := svc.workouts.FindOne(ctx, filter)
+	var workout loggerciseProto.Workout
+	err := mapResultToWorkout(ctx, result, &workout)
+	if err != nil {
+		return nil, err
+	}
+	return &workout, nil
 }
 
 func (svc *Store) GetWorkouts(ctx context.Context, req *loggerciseProto.GetWorkoutsRequest) (*loggerciseProto.WorkoutResponse, error) {
@@ -197,11 +209,60 @@ func (svc *Store) DeleteExercise(ctx context.Context, req *loggerciseProto.Exerc
 }
 
 func (svc *Store) UpsertSet(ctx context.Context, req *loggerciseProto.UpsertSetRequest) (*loggerciseProto.Empty, error) {
-	return nil, nil
+	res := &loggerciseProto.Empty{}
+	isInsert := req.SetId == ""
+	set := MongoSet{
+		SetId:  uuid.New().String(),
+		Weight: req.Set.Weight,
+		Reps:   req.Set.Reps,
+		Rpe:    req.Set.Rpe,
+		Rest:   req.Set.Rest,
+	}
+	if !isInsert {
+		svc.log.Info("Update")
+		set.SetId = req.SetId
+		filter := bson.M{"_id": req.WorkoutId, "exercises._id": req.ExerciseId, "exercises.sets._id": set.SetId}
+		update := bson.M{
+			"$set": bson.M{
+				"exercises.$[].sets.$[]": set,
+			},
+		}
+		opts := options.Update().SetUpsert(true)
+		_, err := svc.workouts.UpdateOne(ctx, filter, update, opts)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		svc.log.Info("Insert")
+		filter := bson.M{"_id": req.WorkoutId, "exercises._id": req.ExerciseId}
+		update := bson.M{
+			"$push": bson.M{
+				"exercises.$[].sets": set,
+			},
+		}
+		opts := options.Update().SetUpsert(true)
+		_, err := svc.workouts.UpdateOne(ctx, filter, update, opts)
+		if err != nil {
+			return nil, err
+		}
+
+	}
+	return res, nil
 }
 
 func (svc *Store) DeleteSet(ctx context.Context, req *loggerciseProto.DeleteSetRequest) (*loggerciseProto.Empty, error) {
-	return nil, nil
+	filter := bson.M{"_id": req.WorkoutId, "exercises._id": req.ExerciseId}
+	update := bson.M{
+		"$pull": bson.M{
+			"exercises.$[].sets": bson.M{"_id": req.SetId},
+		},
+	}
+	opts := options.Update().SetUpsert(true)
+	_, err := svc.workouts.UpdateOne(ctx, filter, update, opts)
+	if err != nil {
+		return nil, err
+	}
+	return &loggerciseProto.Empty{}, nil
 }
 
 func (svc *Store) UpsertLift(ctx context.Context, req *loggerciseProto.UpsertLiftRequest) (*loggerciseProto.LiftResponse, error) {

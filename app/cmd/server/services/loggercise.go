@@ -10,6 +10,7 @@ import (
 
 type LoggerciseServiceIF interface {
 	GetWorkouts(ctx context.Context, req *loggerciseProto.GetWorkoutsRequest) (*loggerciseProto.WorkoutResponse, error)
+	GetWorkout(ctx context.Context, req *loggerciseProto.WorkoutRequest) (*loggerciseProto.Workout, error)
 	UpsertWorkout(ctx context.Context, req *loggerciseProto.UpsertWorkoutRequest) (*loggerciseProto.WorkoutResponse, error)
 	DeleteWorkout(ctx context.Context, req *loggerciseProto.WorkoutRequest) (*loggerciseProto.WorkoutResponse, error)
 	UpsertExercise(ctx context.Context, req *loggerciseProto.UpsertExerciseRequest) (*loggerciseProto.ExerciseResponse, error)
@@ -37,6 +38,10 @@ func NewLoggerciseService(log *logrus.Logger, handler loggerciseHandler.Loggerci
 
 func (svc *LoggerciseService) UpsertWorkout(ctx context.Context, req *loggerciseProto.UpsertWorkoutRequest) (*loggerciseProto.WorkoutResponse, error) {
 	return svc.handler.UpsertWorkout(ctx, req)
+}
+
+func (svc *LoggerciseService) GetWorkout(ctx context.Context, req *loggerciseProto.WorkoutRequest) (*loggerciseProto.Workout, error) {
+	return svc.handler.GetWorkout(ctx, req)
 }
 
 func (svc *LoggerciseService) GetWorkouts(ctx context.Context, req *loggerciseProto.GetWorkoutsRequest) (*loggerciseProto.WorkoutResponse, error) {
